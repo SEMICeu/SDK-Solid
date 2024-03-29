@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "compilerOptions": {
+    "types": ["vitest/jsdom"],
+    "outDir": "dist",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+  },
+  "typedocOptions": {
+    "entryPoints": ["src/main.ts"],
+    "out": "dist/docs"
+  }
+}
