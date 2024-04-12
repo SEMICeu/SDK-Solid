@@ -26,9 +26,9 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1' }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2' }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2' }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -48,6 +48,206 @@ describe('Subject', () => {
     await waitFor(() => {
 
       expect(screen.getByDisplayValue('Foo bar 2')).toBeDefined();
+
+    });
+
+  });
+
+  test('should render first preference when subject is set', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+    });
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const retrieveDataMock = vi.fn();
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: retrieveDataMock,
+    });
+
+    const { getByDisplayValue } = render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} subject="s1" />);
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Foo bar 2')).toBeDefined();
+
+    });
+
+    await waitFor(() => {
+
+      expect(getByDisplayValue('Foo bar 2')).toBeDefined();
+
+    });
+
+  });
+
+  test('should render create form', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+    });
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const retrieveDataMock = vi.fn();
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: retrieveDataMock,
+    });
+
+    render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
+
+    await waitFor(() => {
+
+      expect(screen.getByText('+')).toBeDefined();
+
+    });
+
+    fireEvent.click(screen.getByText('+'));
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Travel preference')).toBeDefined();
+
+    });
+
+  });
+
+  test('should render itinerary by default', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+    });
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const retrieveDataMock = vi.fn();
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: retrieveDataMock,
+    });
+
+    render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Where would you like to go?')).toBeDefined();
+
+    });
+
+  });
+
+  test('should render itinerary after clicking button', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+    });
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const retrieveDataMock = vi.fn();
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: retrieveDataMock,
+    });
+
+    render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
+
+    await waitFor(() => {
+
+      expect(screen.getByText('+')).toBeDefined();
+
+    });
+
+    fireEvent.click(screen.getByText('+'));
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Travel preference')).toBeDefined();
+
+    });
+
+    fireEvent.click(screen.getByText('Generate itinerary'));
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Where would you like to go?')).toBeDefined();
+
+    });
+
+  });
+
+  test('should not render itinerary button when subject is set', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+    });
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const retrieveDataMock = vi.fn();
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: retrieveDataMock,
+    });
+
+    const { queryByText }=render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} subject="123" />);
+
+    await waitFor(() => {
+
+      expect(queryByText('Generate itinerary')).toBeNull();
 
     });
 
@@ -97,6 +297,25 @@ describe('Subject', () => {
     });
 
     render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
+
+  });
+
+  test('should show error message when discover data throws', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'discoverData', {
+      writable: true,
+      value: vi.fn().mockRejectedValue(new Error()),
+    });
+
+    render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
+
+    await waitFor(() => {
+
+      expect(screen.getByText('Something went wrong')).toBeDefined();
+
+    });
 
   });
 

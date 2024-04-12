@@ -4,6 +4,7 @@ import { JWK } from 'jose';
 import { TravelPreference, parseTravelPreference } from '../models/travel-preference';
 import Header from './Header';
 import TravelPreferenceForm from './TravelPreference';
+import Itinerary from './Itinerary';
 
 const Subject = (i: {
   token: string;
@@ -13,6 +14,7 @@ const Subject = (i: {
 }) => {
 
   const [ selectedSubject, setSelectedSubject ] = useState<string | undefined>(undefined);
+  const [ showItinerary, setShowItinerary ] = useState<boolean>(i.subject === undefined);
   // Determines the selected subject
   const [ selectedTravelPreference, setSelectedTravelPreference ] = useState<string | undefined>(undefined);
   // A list of travel preferences belonging to the given subject.
@@ -56,9 +58,10 @@ const Subject = (i: {
 
         setTravelPreferences(preferences);
 
-        // Automatically select the first travel preference
-        if(preferences.length > 0){
+        // Automatically select the first travel preference when subject is set
+        if(preferences.length > 0 && i.subject){
 
+          setShowItinerary(false);
           setSelectedTravelPreference(preferences[0].uri);
 
         }
@@ -102,6 +105,10 @@ const Subject = (i: {
             // Only show header when signed-in as commuter
             !i.subject ? <Header privateKey={i.privateKey} publicKey={i.publicKey} token={i.token}></Header> : ''
           }
+          {
+            // Only show header when signed-in as commuter
+            !i.subject ? <div className={`cursor-pointer hover:bg-slate-50 px-4 py-2 ${selectedTravelPreference === undefined ? 'bg-slate-50' : ''}`} onClick={() => setShowItinerary(true)}>Generate itinerary</div> : ''
+          }
           <div className="flex flex-row gap-2 px-4 py-2">
             <div className="font-semibold">Preferences</div>
             {
@@ -109,7 +116,7 @@ const Subject = (i: {
               decodeIDToken(i.token).payload.webid !== import.meta.env.VITE_SUBJECT_WEBID ?
                 <button
                   className="flex-none w-6 h-6 aspect-square hover:bg-emerald-600 bg-emerald-500 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-default rounded-full cursor-pointer"
-                  onClick={() => setSelectedTravelPreference(undefined)}
+                  onClick={() => { setShowItinerary(false); setSelectedTravelPreference(undefined); }}
                 >+</button> : ''
             }
           </div>
@@ -118,14 +125,21 @@ const Subject = (i: {
               // Show a list of travel preferences
               travelPreferences.length > 0 ?
                 travelPreferences.map(((travelPreference, index) =>
-                  <div className={`cursor-pointer hover:bg-slate-50 px-4 py-2 ${travelPreference.uri === selectedTravelPreference ? 'bg-slate-50' : ''}`} key={index} onClick={() => setSelectedTravelPreference(travelPreference.uri)}>{travelPreference.modeOfTransportation}</div>
+                  <div className={`cursor-pointer hover:bg-slate-50 px-4 py-2 ${travelPreference.uri === selectedTravelPreference ? 'bg-slate-50' : ''}`} key={index} onClick={() => { setShowItinerary(false); setSelectedTravelPreference(travelPreference.uri); }}>{travelPreference.modeOfTransportation}</div>
                 ))
                 : <div>No travel preferences found</div>
             }
           </div>
         </div>
         <div className="bg-white flex-1">
-          <TravelPreferenceForm privateKey={i.privateKey} publicKey={i.publicKey} token={i.token} resource={selectedTravelPreference} onSaved={() => setState('INITIAL')}></TravelPreferenceForm>
+          {
+            !showItinerary ?
+              <TravelPreferenceForm privateKey={i.privateKey} publicKey={i.publicKey} token={i.token} resource={selectedTravelPreference} onSaved={() => setState('INITIAL')}></TravelPreferenceForm> : ''
+          }
+          {
+            showItinerary ?
+              <Itinerary></Itinerary> : ''
+          }
         </div>
       </div>
       {state === 'ERROR' ? <div>Something went wrong</div> : ''}

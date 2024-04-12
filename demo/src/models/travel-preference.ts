@@ -1,6 +1,7 @@
 export interface TravelPreference {
   uri?: string;
   modeOfTransportation: string;
+  daysOfWeek: number[];
 }
 
 export const parseTravelPreference = (uri: string, data: string): TravelPreference => {
@@ -8,17 +9,19 @@ export const parseTravelPreference = (uri: string, data: string): TravelPreferen
   const content = JSON.parse(data) as object;
 
   if(
-    !('modeOfTransportation' in content)
+    !('modeOfTransportation' in content) ||
+    !('daysOfWeek' in content)
   ) {
 
     throw new Error('Data is missing arguments');
 
   }
 
-  const { modeOfTransportation } = content;
+  const { daysOfWeek, modeOfTransportation } = content;
 
   if(
-    typeof modeOfTransportation !== 'string'
+    typeof modeOfTransportation !== 'string' ||
+    !Array.isArray(daysOfWeek)
   ) {
 
     throw new Error('Data is missing arguments');
@@ -28,6 +31,7 @@ export const parseTravelPreference = (uri: string, data: string): TravelPreferen
   return {
     uri,
     modeOfTransportation,
+    daysOfWeek,
   };
 
 };

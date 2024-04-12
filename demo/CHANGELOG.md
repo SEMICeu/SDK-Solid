@@ -1,5 +1,16 @@
 # @useid/movejs-demo
 
+## 0.13.0
+
+### Minor Changes
+
+- Travel preferences form and basic itinerary
+
+### Patch Changes
+
+- Updated dependencies
+  - @useid/movejs@0.13.0
+
 ## 0.12.0
 
 ### Minor Changes

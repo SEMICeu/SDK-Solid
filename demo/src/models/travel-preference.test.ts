@@ -5,8 +5,20 @@ describe('parseTravelPreference', () => {
 
   test('should correctly parse a travel preference', () => {
 
-    expect(parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar' })))
-      .toStrictEqual({ uri: 'https://pods.use.id/foo', modeOfTransportation: 'Foo bar' });
+    expect(parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] })))
+      .toStrictEqual({ uri: 'https://pods.use.id/foo', modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] });
+
+  });
+
+  test('should throw when daysOfWeek is not set', () => {
+
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar' }))).toThrow();
+
+  });
+
+  test('should throw when daysOfWeek is not an array', () => {
+
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: 'bla' }))).toThrow();
 
   });
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import { JWK } from 'jose';
 import TravelPreferenceForm from './TravelPreference';
 
@@ -10,7 +10,7 @@ describe('TravelPreferenceForm', () => {
 
   afterEach(cleanup);
 
-  test('should render selected subject', async () => {
+  test('should render selected preference', async () => {
 
     const movejs = await import('@useid/movejs');
 
@@ -21,7 +21,7 @@ describe('TravelPreferenceForm', () => {
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
-      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar' }))),
+      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
     });
 
     render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
@@ -29,6 +29,73 @@ describe('TravelPreferenceForm', () => {
     await waitFor(() => {
 
       expect(screen.getByDisplayValue('Foo bar')).toBeDefined();
+      expect(screen.getByText('Save')).toBeDefined();
+
+    });
+
+  });
+
+  test('should not render save button when signed in as PTO', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: import.meta.env.VITE_SUBJECT_WEBID } })),
+    });
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
+    });
+
+    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
+
+    await waitFor(() => {
+
+      expect(screen.getByDisplayValue('Foo bar')).toBeDefined();
+      expect(screen.queryByText('Save')).toBeNull();
+
+    });
+
+  });
+
+  test('should change days of week when clicked', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    Object.defineProperty(movejs, 'retrieveData', {
+      writable: true,
+      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
+    });
+
+    const { getByDisplayValue, getByText } = render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
+
+    await waitFor(() => {
+
+      expect(getByDisplayValue('Foo bar')).toBeDefined();
+      expect(getByText('Tuesday').classList.contains('bg-emerald-500')).toBeTruthy();
+
+    });
+
+    fireEvent.click(getByText('Tuesday'));
+
+    await waitFor(() => {
+
+      expect(getByText('Tuesday').classList.contains('bg-slate-100')).toBeTruthy();
+
+    });
+
+    fireEvent.click(getByText('Tuesday'));
+
+    await waitFor(() => {
+
+      expect(getByText('Tuesday').classList.contains('bg-emerald-500')).toBeTruthy();
 
     });
 
