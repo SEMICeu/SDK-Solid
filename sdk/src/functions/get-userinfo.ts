@@ -18,7 +18,7 @@ export const getUserinfo = async (
   privateKey: JWK
 ): Promise<{ email: string }> => {
 
-  log('Starting to get data');
+  log('Starting to get userinfo');
 
   // Generate a correlation and request id
   const correlationId = v4();

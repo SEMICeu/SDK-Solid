@@ -165,7 +165,7 @@ describe('App', () => {
 
     await waitFor(() => {
 
-      expect(screen.getByText('+')).toBeDefined();
+      expect(screen.getByText('Bus')).toBeDefined();
 
     });
 
@@ -195,7 +195,7 @@ describe('App', () => {
       value: { search:'?code=123&state=commuter', href: 'https://foo.bar?code=123&state=commuter' },
     });
 
-    const { getByPlaceholderText } = render(<App />);
+    const { getByText } = render(<App />);
 
     await waitFor(() => {
 
@@ -205,20 +205,20 @@ describe('App', () => {
 
     await waitFor(() => {
 
-      expect(screen.getByText('+')).toBeDefined();
+      expect(getByText('Bus')).toBeDefined();
 
     });
 
-    fireEvent.click(screen.getByText('+', { selector: 'button' }));
+    fireEvent.click(getByText('Bus'));
 
     await waitFor(() => {
 
-      expect(screen.getByText('Travel preference')).toBeDefined();
+      expect(getByText('Travel preference')).toBeDefined();
 
     });
 
-    fireEvent.change(getByPlaceholderText('Mode of transportation'), { target: { value: 'Foo bar' } });
-    fireEvent.click(screen.getByText('Save', { selector: 'button' }));
+    fireEvent.click(getByText('Tuesday'));
+    fireEvent.click(getByText('Save', { selector: 'button' }));
 
     expect(onCreateData).toHaveBeenCalledOnce();
 

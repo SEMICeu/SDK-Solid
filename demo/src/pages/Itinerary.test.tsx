@@ -1,6 +1,25 @@
 import { afterEach, describe, expect, test } from 'vitest';
 import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import { TravelPreference } from '../models/travel-preference';
+import { TravelDisruption } from '../models/travel-disruption';
 import Itinerary from './Itinerary';
+
+const travelDisruptions: TravelDisruption[] = [
+  {
+    label: 'Onderhoudswerken op traject IC12',
+    travelMode: 'Train',
+    from: 'Antwerp',
+    to: 'Brussels',
+    daysOfWeek: [ 'Wednesday', 'Thursday' ],
+  },
+  {
+    label: 'Onderhoudswerken op traject Line 234',
+    travelMode: 'Bus',
+    from: 'Antwerp',
+    to: 'Brussels',
+    daysOfWeek: [ 'Thursday' ],
+  },
+];
 
 describe('Itinerary', () => {
 
@@ -8,40 +27,114 @@ describe('Itinerary', () => {
 
   test('should render disabled form', async () => {
 
-    const { getByText } = render(<Itinerary />);
+    const travelPreferences: TravelPreference[] = [];
+
+    const { getByText } = render(<Itinerary
+      travelPreferences={travelPreferences}
+      travelDisruptions={travelDisruptions} />);
 
     await waitFor(() => {
 
       expect(getByText('Where would you like to go?')).toBeDefined();
-      expect(getByText('Generate itinerary', { selector: 'button' })).toBeDefined();
-      expect(getByText('Generate itinerary', { selector: 'button' }).hasAttribute('disabled')).toBeTruthy();
+      expect(getByText('Tuesday')).toBeDefined();
 
     });
 
   });
 
-  test('should render enabled form when start and destination was filled in', async () => {
+  test('should render travel routes', async () => {
 
-    const { getByText, getByPlaceholderText } = render(<Itinerary />);
+    const travelPreferences: TravelPreference[] = [
+      {
+        travelMode: 'Bus',
+        daysOfWeek: [ 'Tuesday', 'Wednesday' ],
+      },
+    ];
+
+    const { getByText, getByLabelText } = render(<Itinerary
+      travelPreferences={travelPreferences}
+      travelDisruptions={travelDisruptions} />);
 
     await waitFor(() => {
 
       expect(getByText('Where would you like to go?')).toBeDefined();
-      expect(getByText('Generate itinerary', { selector: 'button' })).toBeDefined();
-      expect(getByText('Generate itinerary', { selector: 'button' }).hasAttribute('disabled')).toBeTruthy();
+      expect(getByText('Tuesday')).toBeDefined();
 
     });
 
-    fireEvent.change(getByPlaceholderText('Start'), { target: { value: 'start street' } });
-    fireEvent.change(getByPlaceholderText('Destination'), { target: { value: 'start street' } });
+    fireEvent.change(getByLabelText('From'), { target: { value: 'Antwerp' } });
+    fireEvent.change(getByLabelText('to'), { target: { value: 'Brussels' } });
+    fireEvent.change(getByLabelText('on'), { target: { value: 'Tuesday' } });
 
     await waitFor(() => {
 
-      expect(getByText('Generate itinerary', { selector: 'button' }).hasAttribute('disabled')).toBeFalsy();
+      expect(getByText('Line 234')).toBeDefined();
 
     });
 
-    fireEvent.click(getByText('Generate itinerary', { selector: 'button' }));
+  });
+
+  test('should render travel routes', async () => {
+
+    const travelPreferences: TravelPreference[] = [
+      {
+        travelMode: 'Bus',
+        daysOfWeek: [ 'Tuesday', 'Thursday' ],
+      },
+    ];
+
+    const { getByText, getByLabelText, queryByText } = render(<Itinerary
+      travelPreferences={travelPreferences}
+      travelDisruptions={travelDisruptions} />);
+
+    await waitFor(() => {
+
+      expect(getByText('Where would you like to go?')).toBeDefined();
+      expect(getByText('Thursday')).toBeDefined();
+
+    });
+
+    fireEvent.change(getByLabelText('From'), { target: { value: 'Antwerp' } });
+    fireEvent.change(getByLabelText('to'), { target: { value: 'Brussels' } });
+    fireEvent.change(getByLabelText('on'), { target: { value: 'Thursday' } });
+
+    await waitFor(() => {
+
+      expect(queryByText('Line 234')).toBeNull();
+
+    });
+
+  });
+
+  test('should render travel routes', async () => {
+
+    const travelPreferences: TravelPreference[] = [
+      {
+        travelMode: 'Bus',
+        daysOfWeek: [ 'Tuesday', 'Thursday' ],
+      },
+    ];
+
+    const { getByText, getByLabelText } = render(<Itinerary
+      travelPreferences={travelPreferences}
+      travelDisruptions={travelDisruptions} />);
+
+    await waitFor(() => {
+
+      expect(getByText('Where would you like to go?')).toBeDefined();
+      expect(getByText('Thursday')).toBeDefined();
+
+    });
+
+    fireEvent.change(getByLabelText('From'), { target: { value: 'Ghent' } });
+    fireEvent.change(getByLabelText('to'), { target: { value: 'Brussels' } });
+    fireEvent.change(getByLabelText('on'), { target: { value: 'Thursday' } });
+
+    await waitFor(() => {
+
+      expect(getByText('Line 380')).toBeDefined();
+
+    });
 
   });
 

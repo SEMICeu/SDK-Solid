@@ -11,12 +11,14 @@ import { getWebIdProfile } from './get-webid-profile';
  * @param token - Token of the user for which to discover data.
  * @param publicKey - Public key to be used for creating the DPoP proof.
  * @param privateKey - Private key to be used for creating the DPoP proof.
+ * @param additionalStores - Additional stores to discover aside from the ones in the profile document.
  * @returns A list of resources to which the user has access.
  */
 export const discoverData = async (
   token: string,
   publicKey: JWK,
-  privateKey: JWK
+  privateKey: JWK,
+  additionalStores?: string[],
 ): Promise<{ subject: string; type: string; uri: string }[]> => {
 
   log('Starting to discover data');
@@ -28,7 +30,10 @@ export const discoverData = async (
   const profile = await getWebIdProfile(payload.webid);
 
   // Discover data in each storage location listed in the profile document.
-  return (await Promise.all(profile.storageLocations.map(async (storageLocation) => {
+  return (await Promise.all([
+    ...profile.storageLocations,
+    ...additionalStores ? additionalStores : [],
+  ].map(async (storageLocation) => {
 
     log('Discovering storage location', storageLocation);
 
@@ -70,13 +75,8 @@ export const discoverData = async (
     }
 
     // Parse discovery response as JSON
-    const discoveryBody: unknown = await discoveryResponse.json();
-
-    if(!discoveryBody || typeof discoveryBody !== 'object') {
-
-      throw new Error('Could not parse discovery response');
-
-    }
+    const discoveryText = await discoveryResponse.text();
+    const discoveryBody = JSON.parse(discoveryText.split('//# sourceMappingURL=')[0]) as object;
 
     // Set empty array when no combinations are found in body
     const combinations = !('subject_type_combinations' in discoveryBody) || !Array.isArray(discoveryBody.subject_type_combinations) ? [] : discoveryBody.subject_type_combinations;

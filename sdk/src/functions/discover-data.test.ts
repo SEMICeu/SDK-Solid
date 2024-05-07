@@ -7,7 +7,7 @@ describe('discoverData', () => {
   const publicKey: JWK = { 'alg' : 'ES256', 'kty': 'EC', 'crv': 'P-256', 'x': 'NmV46PCsJwA9qpun1yKorLtz1hvN2SfJ7xtSbRNRP0w', 'y': '3L27N4N4Ww-PAiWzUvjZ6QqozodRDlRbDDDASm5pgWo' };
   const privateKey: JWK = { 'alg' : 'ES256', 'kty': 'EC', 'crv': 'P-256', 'x': 'NmV46PCsJwA9qpun1yKorLtz1hvN2SfJ7xtSbRNRP0w', 'y': '3L27N4N4Ww-PAiWzUvjZ6QqozodRDlRbDDDASm5pgWo', 'd': 'rW1QJiBwvPD7AEM3HNWNJ2X-2jNXYGdz2Jo-uCvjdB8' };
 
-  test('should return list of resources', async () => {
+  test('should return list of resources when querying without additional store', async () => {
 
     const d = await import('../utils/decode-id-token');
     const w = await import('../functions/get-webid-profile');
@@ -28,7 +28,7 @@ describe('discoverData', () => {
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => ({ subject_type_combinations: [
+          text: async () => (JSON.stringify({ subject_type_combinations: [
             {
               subject: 's1',
               type: 't1',
@@ -43,12 +43,12 @@ describe('discoverData', () => {
                 { uri: 'u2' },
               ],
             },
-          ] }),
+          ] })),
         }))
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => ({ subject_type_combinations: [
+          text: async () => (JSON.stringify({ subject_type_combinations: [
             {
               subject: 's1',
               type: 't3',
@@ -56,11 +56,66 @@ describe('discoverData', () => {
                 { uri: 'u3' },
               ],
             },
-          ] }),
+          ] })),
         })),
     });
 
-    expect((await discoverData('https://idp.foo.bar', publicKey, privateKey)).sort((a, b) => a.type.localeCompare(b.type))).toStrictEqual([
+  });
+
+  test('should return list of resources when querying with additional store', async () => {
+
+    const d = await import('../utils/decode-id-token');
+    const w = await import('../functions/get-webid-profile');
+
+    Object.defineProperty(d, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 'https://use.id/foo' } })),
+    });
+
+    Object.defineProperty(w, 'getWebIdProfile', {
+      writable: true,
+      value: vi.fn().mockResolvedValue({ storageLocations: [ 'https://pods1.use.id/foo' ] }),
+    });
+
+    Object.defineProperty(window, 'fetch', {
+      writable: true,
+      value: vi.fn()
+        .mockImplementationOnce(() => ({
+          ok: true,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          text: async () => (JSON.stringify({ subject_type_combinations: [
+            {
+              subject: 's1',
+              type: 't1',
+              resources: [
+                { uri: 'u1' },
+              ],
+            },
+            {
+              subject: 's1',
+              type: 't2',
+              resources: [
+                { uri: 'u2' },
+              ],
+            },
+          ] })),
+        }))
+        .mockImplementationOnce(() => ({
+          ok: true,
+          // eslint-disable-next-line @typescript-eslint/require-await
+          text: async () => (JSON.stringify({ subject_type_combinations: [
+            {
+              subject: 's1',
+              type: 't3',
+              resources: [
+                { uri: 'u3' },
+              ],
+            },
+          ] })),
+        })),
+    });
+
+    expect((await discoverData('https://idp.foo.bar', publicKey, privateKey, [ 'https://pods2.use.id/foo' ])).sort((a, b) => a.type.localeCompare(b.type))).toStrictEqual([
       {
         subject: 's1',
         type: 't1',
@@ -147,7 +202,7 @@ describe('discoverData', () => {
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => 'bla',
+          text: async () => 'bla',
         })),
     });
 
@@ -176,7 +231,7 @@ describe('discoverData', () => {
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => ({ bla: [
+          text: async () => (JSON.stringify({ bla: [
             {
               subject: 's1',
               type: 't1',
@@ -191,7 +246,7 @@ describe('discoverData', () => {
                 { uri: 'u2' },
               ],
             },
-          ] }),
+          ] })),
         })),
     });
 
@@ -220,7 +275,7 @@ describe('discoverData', () => {
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => ({ subject_type_combinations: [
+          text: async () => (JSON.stringify({ subject_type_combinations: [
             {
               bla: 's1',
               type: 't1',
@@ -235,7 +290,7 @@ describe('discoverData', () => {
                 { uri: 'u2' },
               ],
             },
-          ] }),
+          ] })),
         })),
     });
 
@@ -264,7 +319,7 @@ describe('discoverData', () => {
         .mockImplementationOnce(() => ({
           ok: true,
           // eslint-disable-next-line @typescript-eslint/require-await
-          json: async () => ({ subject_type_combinations: [
+          text: async () => (JSON.stringify({ subject_type_combinations: [
             {
               subject: 's1',
               type: 't1',
@@ -277,7 +332,7 @@ describe('discoverData', () => {
               type: 't2',
               resources: 'bla',
             },
-          ] }),
+          ] })),
         })),
     });
 

@@ -24,7 +24,7 @@ export const createData = async (
   privateKey: JWK
 ): Promise<string> => {
 
-  log('Starting to get data');
+  log('Starting to create data', { storageLocation });
 
   // Check if the storage location is a valid URI
   let uri;

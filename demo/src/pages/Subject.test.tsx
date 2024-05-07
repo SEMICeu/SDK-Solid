@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import { JWK } from 'jose';
-import { VOC_TRAVEL_PREFERENCE } from '../vocabulary';
+import { VOC_TRAVEL_DISRUPTION, VOC_TRAVEL_PREFERENCE } from '../vocabulary';
 import Subject from './Subject';
 
 describe('Subject', () => {
@@ -17,7 +17,7 @@ describe('Subject', () => {
 
     Object.defineProperty(movejs, 'discoverData', {
       writable: true,
-      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' } ])),
+      value: vi.fn(() => Promise.resolve([ { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u1' }, { subject: 's1', type: VOC_TRAVEL_PREFERENCE, uri: 'u2' }, { subject: 's1', type: VOC_TRAVEL_DISRUPTION, uri: 'u2' } ])),
     });
 
     Object.defineProperty(movejs, 'decodeIDToken', {
@@ -26,9 +26,10 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ], label: 'Foo bar' }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -39,15 +40,18 @@ describe('Subject', () => {
 
     await waitFor(() => {
 
-      expect(screen.getByText('Foo bar 2')).toBeDefined();
+      expect(screen.getByText('Train')).toBeDefined();
+      expect(screen.getByText('Where would you like to go?')).toBeDefined();
+      expect(screen.queryByText('Travel preference')).toBeNull();
 
     });
 
-    fireEvent.click(screen.getByText('Foo bar 2'));
+    fireEvent.click(screen.queryAllByText('Train')[0]);
 
     await waitFor(() => {
 
-      expect(screen.getByDisplayValue('Foo bar 2')).toBeDefined();
+      expect(screen.queryByText('Where would you like to go?')).toBeNull();
+      expect(screen.getByText('Travel preference')).toBeDefined();
 
     });
 
@@ -64,30 +68,28 @@ describe('Subject', () => {
 
     Object.defineProperty(movejs, 'decodeIDToken', {
       writable: true,
-      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+      value: vi.fn(() => ({ payload: { webid: import.meta.env.VITE_SUBJECT_WEBID } })),
     });
 
-    const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    const retrieveDataMock = vi.fn((u: string) => Promise.resolve(u === 'u1' ? JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }) : JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] })));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
       value: retrieveDataMock,
     });
 
-    const { getByDisplayValue } = render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} subject="s1" />);
+    const { getByText } = render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} subject="s1" />);
 
     await waitFor(() => {
 
-      expect(screen.getByText('Foo bar 2')).toBeDefined();
+      expect(getByText('Train')).toBeDefined();
+      expect(getByText('Bus')).toBeDefined();
 
     });
 
     await waitFor(() => {
 
-      expect(getByDisplayValue('Foo bar 2')).toBeDefined();
+      expect(getByText('Travel preference')).toBeDefined();
 
     });
 
@@ -108,9 +110,9 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -121,14 +123,17 @@ describe('Subject', () => {
 
     await waitFor(() => {
 
-      expect(screen.getByText('+')).toBeDefined();
+      expect(screen.getByText('Bus')).toBeDefined();
+      expect(screen.getByText('Where would you like to go?')).toBeDefined();
+      expect(screen.queryByText('Travel preference')).toBeNull();
 
     });
 
-    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.queryAllByText('Bus')[0]);
 
     await waitFor(() => {
 
+      expect(screen.queryByText('Where would you like to go?')).toBeNull();
       expect(screen.getByText('Travel preference')).toBeDefined();
 
     });
@@ -150,9 +155,9 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -184,9 +189,9 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -195,13 +200,7 @@ describe('Subject', () => {
 
     render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
 
-    await waitFor(() => {
-
-      expect(screen.getByText('+')).toBeDefined();
-
-    });
-
-    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('Bus'));
 
     await waitFor(() => {
 
@@ -234,9 +233,9 @@ describe('Subject', () => {
     });
 
     const retrieveDataMock = vi.fn();
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 1', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
-    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ modeOfTransportation: 'Foo bar 2', daysOfWeek: [ 1, 2 ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
+    retrieveDataMock.mockResolvedValueOnce(JSON.stringify({ travelMode: 'Train', daysOfWeek: [ 'Tuesday', 'Wednesday' ] }));
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
@@ -248,30 +247,6 @@ describe('Subject', () => {
     await waitFor(() => {
 
       expect(queryByText('Generate itinerary')).toBeNull();
-
-    });
-
-  });
-
-  test('should render an empty list', async () => {
-
-    const movejs = await import('@useid/movejs');
-
-    Object.defineProperty(movejs, 'discoverData', {
-      writable: true,
-      value: vi.fn(() => Promise.resolve([ ])),
-    });
-
-    Object.defineProperty(movejs, 'decodeIDToken', {
-      writable: true,
-      value: vi.fn(() => ({ payload: { webid: 's1' } })),
-    });
-
-    render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
-
-    await waitFor(() => {
-
-      expect(screen.getByText('No travel preferences found')).toBeDefined();
 
     });
 
@@ -293,7 +268,7 @@ describe('Subject', () => {
 
     Object.defineProperty(movejs, 'retrieveData', {
       writable: true,
-      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation123: 'Foo bar' }))),
+      value: vi.fn(() => Promise.resolve(JSON.stringify({ travelMode123: 'Foo bar' }))),
     });
 
     render(<Subject token="ABC" publicKey={publicKey} privateKey={privateKey} />);
@@ -313,7 +288,7 @@ describe('Subject', () => {
 
     await waitFor(() => {
 
-      expect(screen.getByText('Something went wrong')).toBeDefined();
+      expect(screen.getByText('Something went wrong (Subject)')).toBeDefined();
 
     });
 

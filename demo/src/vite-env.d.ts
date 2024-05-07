@@ -4,6 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_IDP_BASE_URI: string;
   readonly VITE_CLIENT_ID: string;
   readonly VITE_SUBJECT_WEBID: string;
+  readonly VITE_SUBJECT_EMAIL: string;
 }
 
 interface ImportMeta {

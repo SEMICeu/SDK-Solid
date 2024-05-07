@@ -1,0 +1,7 @@
+{
+    "label": "Onderhoudswerken op traject IC12",
+    "travelMode": "Train",
+    "from": "Antwerp",
+    "to": "Brussels",
+    "daysOfWeek": ["Wednesday", "Thursday"]
+}

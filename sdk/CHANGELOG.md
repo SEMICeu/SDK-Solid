@@ -1,5 +1,23 @@
 # @useid/movejs
 
+## 0.16.0
+
+### Minor Changes
+
+- Update PTO email address
+
+## 0.15.0
+
+### Minor Changes
+
+- Improve forms
+
+## 0.14.0
+
+### Minor Changes
+
+- First version of algorithm & readme file
+
 ## 0.13.0
 
 ### Minor Changes

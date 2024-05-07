@@ -65,7 +65,7 @@ describe('Subjects', () => {
 
     Object.defineProperty(movejs, 'getUserinfo', {
       writable: true,
-      value: vi.fn(() => Promise.resolve({ email: 'pto@useid.dev' })),
+      value: vi.fn(() => Promise.resolve({ email: import.meta.env.VITE_SUBJECT_EMAIL })),
     });
 
     render(<Subjects token="ABC" publicKey={publicKey} privateKey={privateKey} />);

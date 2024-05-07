@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { log, requestPatch } from '@useid/movejs';
 import logo from '../assets/logo.svg';
 import { patchForCommuter } from '../patch/patch-for-commuter';
+import { patchForPTO } from '../patch/patch-for-pto';
 
 const SignIn = (i: { codeVerifier: string }) => {
 
@@ -11,10 +12,22 @@ const SignIn = (i: { codeVerifier: string }) => {
 
     log('Handling sign-in', email);
 
-    const patch = patchForCommuter(
-      import.meta.env.VITE_CLIENT_ID,
-      import.meta.env.VITE_SUBJECT_WEBID,
-    );
+    let patch;
+
+    if(email === import.meta.env.VITE_SUBJECT_EMAIL) {
+
+      patch = patchForPTO(
+        import.meta.env.VITE_CLIENT_ID,
+      );
+
+    } else {
+
+      patch = patchForCommuter(
+        import.meta.env.VITE_CLIENT_ID,
+        import.meta.env.VITE_SUBJECT_WEBID,
+      );
+
+    }
 
     const uri = await requestPatch(
       email,

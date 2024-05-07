@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import { JWK } from 'jose';
+import { TravelPreference } from '../models/travel-preference';
 import TravelPreferenceForm from './TravelPreference';
 
 describe('TravelPreferenceForm', () => {
@@ -19,17 +20,13 @@ describe('TravelPreferenceForm', () => {
       value: vi.fn(() => ({ payload: { webid: 's1' } })),
     });
 
-    Object.defineProperty(movejs, 'retrieveData', {
-      writable: true,
-      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
-    });
+    const preference: TravelPreference = { travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ], uri: 'https://pods.use.id/foo' };
 
-    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
+    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} travelPreference={preference} travelMode="Bus" />);
 
     await waitFor(() => {
 
-      expect(screen.getByDisplayValue('Foo bar')).toBeDefined();
-      expect(screen.getByText('Save')).toBeDefined();
+      expect(screen.queryByText('Save')).toBeNull();
 
     });
 
@@ -44,17 +41,42 @@ describe('TravelPreferenceForm', () => {
       value: vi.fn(() => ({ payload: { webid: import.meta.env.VITE_SUBJECT_WEBID } })),
     });
 
-    Object.defineProperty(movejs, 'retrieveData', {
-      writable: true,
-      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
-    });
+    const preference: TravelPreference = { travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ], uri: 'https://pods.use.id/foo' };
 
-    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
+    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} travelPreference={preference} travelMode="Bus" />);
 
     await waitFor(() => {
 
-      expect(screen.getByDisplayValue('Foo bar')).toBeDefined();
       expect(screen.queryByText('Save')).toBeNull();
+
+    });
+
+  });
+
+  test('should not change days of week when clicked and resource exists', async () => {
+
+    const movejs = await import('@useid/movejs');
+
+    Object.defineProperty(movejs, 'decodeIDToken', {
+      writable: true,
+      value: vi.fn(() => ({ payload: { webid: 's1' } })),
+    });
+
+    const preference: TravelPreference = { travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ], uri: 'https://pods.use.id/foo' };
+
+    const { getByText } = render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} travelPreference={preference} travelMode="Bus" />);
+
+    await waitFor(() => {
+
+      expect(getByText('Tuesday').classList.contains('bg-emerald-500')).toBeTruthy();
+
+    });
+
+    fireEvent.click(getByText('Tuesday'));
+
+    await waitFor(() => {
+
+      expect(getByText('Tuesday').classList.contains('bg-emerald-500')).toBeTruthy();
 
     });
 
@@ -69,21 +91,7 @@ describe('TravelPreferenceForm', () => {
       value: vi.fn(() => ({ payload: { webid: 's1' } })),
     });
 
-    Object.defineProperty(movejs, 'retrieveData', {
-      writable: true,
-      value: vi.fn(() => Promise.resolve(JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] }))),
-    });
-
-    const { getByDisplayValue, getByText } = render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
-
-    await waitFor(() => {
-
-      expect(getByDisplayValue('Foo bar')).toBeDefined();
-      expect(getByText('Tuesday').classList.contains('bg-emerald-500')).toBeTruthy();
-
-    });
-
-    fireEvent.click(getByText('Tuesday'));
+    const { getByText } = render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} travelMode="Bus" />);
 
     await waitFor(() => {
 
@@ -99,27 +107,11 @@ describe('TravelPreferenceForm', () => {
 
     });
 
-  });
-
-  test('should show error message when retrieve data fails', async () => {
-
-    const movejs = await import('@useid/movejs');
-
-    Object.defineProperty(movejs, 'decodeIDToken', {
-      writable: true,
-      value: vi.fn(() => ({ payload: { webid: 's1' } })),
-    });
-
-    Object.defineProperty(movejs, 'retrieveData', {
-      writable: true,
-      value: vi.fn(() => Promise.reject(new Error())),
-    });
-
-    render(<TravelPreferenceForm token="ABC" publicKey={publicKey} privateKey={privateKey} resource="https://pods.use.id/foo" />);
+    fireEvent.click(getByText('Tuesday'));
 
     await waitFor(() => {
 
-      expect(screen.getByText('Something went wrong')).toBeDefined();
+      expect(getByText('Tuesday').classList.contains('bg-slate-100')).toBeTruthy();
 
     });
 

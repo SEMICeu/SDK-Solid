@@ -49,11 +49,65 @@ describe('SignIn', () => {
       value: fn,
     });
 
+    const patchForCommuterFn = vi.fn();
+    const c = await import('../patch/patch-for-commuter');
+
+    Object.defineProperty(c, 'patchForCommuter', {
+      writable: true,
+      value: patchForCommuterFn,
+    });
+
+    const patchForPTOFn = vi.fn();
+    const p = await import('../patch/patch-for-pto');
+
+    Object.defineProperty(p, 'patchForPTO', {
+      writable: true,
+      value: patchForPTOFn,
+    });
+
     const { getByText, getByPlaceholderText } = render(<SignIn codeVerifier="codeVerifier" />);
     fireEvent.change(getByPlaceholderText('Email address'), { target: { value: 'wouter@digita.ai' } });
     fireEvent.click(getByText('Sign-in', { selector: 'button' }));
 
     expect(fn).toHaveBeenCalled();
+    expect(patchForCommuterFn).toHaveBeenCalled();
+    expect(patchForPTOFn).not.toHaveBeenCalled();
+
+  });
+
+  test('onSignIn should be called when clicked after entering a valid email.', async () => {
+
+    const movejs = await import('@useid/movejs');
+    const fn = vi.fn().mockResolvedValue('https://foo.bar');
+
+    Object.defineProperty(movejs, 'requestPatch', {
+      writable: true,
+      value: fn,
+    });
+
+    const patchForCommuterFn = vi.fn();
+    const c = await import('../patch/patch-for-commuter');
+
+    Object.defineProperty(c, 'patchForCommuter', {
+      writable: true,
+      value: patchForCommuterFn,
+    });
+
+    const patchForPTOFn = vi.fn();
+    const p = await import('../patch/patch-for-pto');
+
+    Object.defineProperty(p, 'patchForPTO', {
+      writable: true,
+      value: patchForPTOFn,
+    });
+
+    const { getByText, getByPlaceholderText } = render(<SignIn codeVerifier="codeVerifier" />);
+    fireEvent.change(getByPlaceholderText('Email address'), { target: { value: import.meta.env.VITE_SUBJECT_EMAIL } });
+    fireEvent.click(getByText('Sign-in', { selector: 'button' }));
+
+    expect(fn).toHaveBeenCalled();
+    expect(patchForCommuterFn).not.toHaveBeenCalled();
+    expect(patchForPTOFn).toHaveBeenCalled();
 
   });
 

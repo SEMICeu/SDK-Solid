@@ -5,32 +5,32 @@ describe('parseTravelPreference', () => {
 
   test('should correctly parse a travel preference', () => {
 
-    expect(parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] })))
-      .toStrictEqual({ uri: 'https://pods.use.id/foo', modeOfTransportation: 'Foo bar', daysOfWeek: [ 1, 2 ] });
+    expect(parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] })))
+      .toStrictEqual({ uri: 'https://pods.use.id/foo', travelMode: 'Bus', daysOfWeek: [ 'Tuesday', 'Wednesday' ] });
 
   });
 
   test('should throw when daysOfWeek is not set', () => {
 
-    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar' }))).toThrow();
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ travelMode: 'Bus' }))).toThrow();
 
   });
 
   test('should throw when daysOfWeek is not an array', () => {
 
-    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 'Foo bar', daysOfWeek: 'bla' }))).toThrow();
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ travelMode: 'Bus', daysOfWeek: 'bla' }))).toThrow();
 
   });
 
-  test('should throw when modeOfTransportation is not set', () => {
+  test('should throw when travelMode is not set', () => {
 
-    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation123: 'Foo bar' }))).toThrow();
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ travelMode123: 'Bus' }))).toThrow();
 
   });
 
-  test('should throw when modeOfTransportation is not a string', () => {
+  test('should throw when travelMode is not a string', () => {
 
-    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ modeOfTransportation: 123 }))).toThrow();
+    expect(() => parseTravelPreference('https://pods.use.id/foo', JSON.stringify({ travelMode: 123 }))).toThrow();
 
   });
 

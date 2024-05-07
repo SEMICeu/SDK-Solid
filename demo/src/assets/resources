@@ -1,0 +1,13 @@
+{
+    "subject_type_combinations": [
+        {
+            "subject": "*",
+            "type": "https://voc.movejs.io/travel-disruption",
+            "resources": [
+                {
+                    "uri": "http://localhost:5173/src/assets/resource/disruption-1"
+                }
+            ]
+        }
+    ]
+}

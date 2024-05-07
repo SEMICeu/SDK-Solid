@@ -1,5 +1,38 @@
 # @useid/movejs-demo
 
+## 0.16.0
+
+### Minor Changes
+
+- Update PTO email address
+
+### Patch Changes
+
+- Updated dependencies
+  - @useid/movejs@0.16.0
+
+## 0.15.0
+
+### Minor Changes
+
+- Improve forms
+
+### Patch Changes
+
+- Updated dependencies
+  - @useid/movejs@0.15.0
+
+## 0.14.0
+
+### Minor Changes
+
+- First version of algorithm & readme file
+
+### Patch Changes
+
+- Updated dependencies
+  - @useid/movejs@0.14.0
+
 ## 0.13.0
 
 ### Minor Changes
