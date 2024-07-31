@@ -2,8 +2,9 @@
 This repository contains an SDK and demo of the Solid protocol that reuses the SDK.
 The SDK is a framework written in TypeScript that includes functions to connect with a Solid pod, such as:
 
-- compress a patch document
-- create a new resource
+- compress a patch document (generating instructions for the identity provider to sign the user in as well as 
+communicate what type of access rights will be needed by the application)
+- create a new resource (data)
 - discover data the given user has access to and returns a list of metadata.
 - Exchange a code for an identity provider
 - Retrieve data about the user
