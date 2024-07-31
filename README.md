@@ -15,7 +15,7 @@ From this point on the user is signed in and he is allowed to:
 - Generate a URI to which the user should be redirected in order to approve the patch request
 
 
-Those functions
+Those functions can be found in the folder:
 
 
 ## Getting started
