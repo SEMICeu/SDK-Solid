@@ -15,7 +15,7 @@ From this point on the user is signed in and he is allowed to:
 - Generate a URI to which the user should be redirected in order to approve the patch request
 
 
-Those functions can be found in the folder: https://github.com/SEMICeu/SDK-Solid/tree/main/sdk/src/functions and collected in the file 
+Those functions can be found in the folder: https://github.com/SEMICeu/SDK-Solid/tree/main/sdk/src/functions and collected in the file [main.ts](https://github.com/SEMICeu/SDK-Solid/blob/main/sdk/src/main.ts)
 
 The demo is a React application that reuses the SDK.
 
