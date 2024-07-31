@@ -21,7 +21,7 @@ Those functions can be found in the [functions](https://github.com/SEMICeu/SDK-S
 
 New functions can be added in the functions folder and declared in the main.ts file.
 
-The demo is a React application that reuses the SDK built in Typescript and compiled in Javascript.
+The demo is a React application built in Typescript and compiled in Javascript.
 
 In order to reuse the SDK, the demo includes it first as [dependency](https://github.com/SEMICeu/SDK-Solid/blob/main/demo/package.json#L13), so then the application can reuse certain functions, see [App.tsx-Line2](https://github.com/SEMICeu/SDK-Solid/blob/main/demo/src/App.tsx#L2), and directly call them, see [App.tsx-Line86](https://github.com/SEMICeu/SDK-Solid/blob/main/demo/src/App.tsx#L86)
 
