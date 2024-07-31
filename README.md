@@ -1,5 +1,7 @@
 # Solid-SDK
-This repository contains an SDK and demo of the Solid protocol. It's written test
+This repository contains an SDK and demo of the Solid protocol that reuses the SDK.
+The SDK is a framework written in TypeScript that includes functions to connect with a Solid pod.
+
 
 ## Getting started
 Start by installing the SDK as a dependency of your project.
