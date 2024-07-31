@@ -8,11 +8,12 @@ communicate what type of access rights will be needed by the application)
 
 From this point on the user is signed in and he is allowed to:
 - create a new resource (data)
-- discover data the given user has access to and returns a list of metadata.
+- discover data the given user has access to and returns a list of metadata
+- Retrieve the content of a given resource
 - Retrieve data about the user
 - Retrieve and parses the profile document of a given webid
 - Generate a URI to which the user should be redirected in order to approve the patch request
-- Retrieve the content of a given resource
+
 
 Those functions
 
