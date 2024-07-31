@@ -1,5 +1,5 @@
 # Solid-SDK
-This repository contains an SDK and demo of the Solid protocol. It's written 
+This repository contains an SDK and demo of the Solid protocol. It's written test
 
 ## Getting started
 Start by installing the SDK as a dependency of your project.
