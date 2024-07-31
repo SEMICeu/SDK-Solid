@@ -19,9 +19,11 @@ From this point on the user is signed in and he is allowed to:
 
 Those functions can be found in the [functions](https://github.com/SEMICeu/SDK-Solid/tree/main/sdk/src/functions) folder and collected in the file [main.ts](https://github.com/SEMICeu/SDK-Solid/blob/main/sdk/src/main.ts)
 
-New functions can be added in the functions folder and declared in the main.ts file
+New functions can be added in the functions folder and declared in the main.ts file.
 
 The demo is a React application that reuses the SDK built in Typescript and compiled in Javascript.
+
+In order to reuse the SDK, the demo includes it as [dependency](https://github.com/SEMICeu/SDK-Solid/blob/main/demo/package.json#L13)
 
 
 
