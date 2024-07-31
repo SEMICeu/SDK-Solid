@@ -9,7 +9,7 @@ The user has to perform the following two functions to be able to manage data:
 communicate what type of access rights will be needed by the application)
 - Exchange a code for an identity provider
 
-From this point on the user is signed in and he is allowed to:
+From this point on, the user is signed in and he is allowed to:
 - create a new resource (data)
 - discover data the given user has access to and returns a list of metadata
 - Retrieve the content of a given resource
