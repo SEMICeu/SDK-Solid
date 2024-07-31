@@ -15,7 +15,7 @@ From this point on the user is signed in and he is allowed to:
 - Generate a URI to which the user should be redirected in order to approve the patch request
 
 
-Those functions can be found in the folder:
+Those functions can be found in the folder: https://github.com/SEMICeu/SDK-Solid/tree/main/sdk/src/functions
 
 
 ## Getting started
