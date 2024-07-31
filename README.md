@@ -1,5 +1,5 @@
 # Solid-SDK
-This repository contains an SDK and demo of the Solid protocol that reuses the SDK.
+This repository contains an [SDK](https://github.com/SEMICeu/SDK-Solid/tree/main/sdk) and demo of the Solid protocol that reuses the SDK.
 The SDK is a framework written in TypeScript that includes functions to connect with a Solid pod.
 
 The user has to perform these 2 first functions to be able to manage data: 
