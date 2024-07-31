@@ -7,15 +7,15 @@ The user has to perform the following two functions to be able to manage data:
 
 - compress a patch document (generating instructions for the identity provider to sign the user in as well as 
 communicate what type of access rights will be needed by the application)
-- Exchange a code for an identity provider
+- exchange a code for an identity provider
 
 From this point on, the user is signed in and he is allowed to:
 - create a new resource (data)
 - discover data the given user has access to and returns a list of metadata
-- Retrieve the content of a given resource
-- Retrieve data about the user
-- Retrieve and parses the profile document of a given webid
-- Generate a URI to which the user should be redirected in order to approve the patch request
+- retrieve the content of a given resource
+- retrieve data about the user
+- retrieve and parses the profile document of a given webid
+- generate a URI to which the user should be redirected in order to approve the patch request
 
 Those functions can be found in the [functions](https://github.com/SEMICeu/SDK-Solid/tree/main/sdk/src/functions) folder and collected in the file [main.ts](https://github.com/SEMICeu/SDK-Solid/blob/main/sdk/src/main.ts)
 
