@@ -19,7 +19,9 @@ Those functions can be found in the [functions](https://github.com/SEMICeu/SDK-S
 
 New functions can be added in the functions folder and declared in the main.ts file
 
-The demo is a React application that reuses the SDK.
+The demo is a React application that reuses the SDK built in Typescript and compiled in Javascript.
+
+
 
 ## Getting started
 Start by installing the SDK as a dependency of your project.
