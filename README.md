@@ -3,7 +3,7 @@ This repository contains an [SDK](https://github.com/SEMICeu/SDK-Solid/tree/main
 
 The SDK is a framework written in TypeScript that includes functions to connect with a Solid pod and Identity Providers.
 
-The user has to perform these 2 first functions to be able to manage data: 
+The user has to perform the following two functions to be able to manage data: 
 
 - compress a patch document (generating instructions for the identity provider to sign the user in as well as 
 communicate what type of access rights will be needed by the application)
