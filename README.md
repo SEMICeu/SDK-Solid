@@ -5,7 +5,7 @@ The SDK is a framework written in TypeScript that includes functions to connect 
 
 The user has to perform the following two functions in order to manage data: 
 
-- compress a patch document (generating instructions for the identity provider to sign the user in as well as communicate what type of access rights will be needed by the application)
+- compress a patch document (generating instructions for the identity provider to sign the user in as well as communicate what type of access rights will be needed by an application)
 - exchange a code for an identity provider
 
 From this point on, the user is signed in and he is allowed to:
